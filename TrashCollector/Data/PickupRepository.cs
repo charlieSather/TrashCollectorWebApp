@@ -13,5 +13,9 @@ namespace TrashCollector.Data
             :base(applicationDbContext) 
         {
         }
+
+        public void CreatePickup(Pickup pickup) => Create(pickup);
+
+        public Pickup GetPickup(int id) => FindByCondition(p => p.Id == id).SingleOrDefault();
     }
 }

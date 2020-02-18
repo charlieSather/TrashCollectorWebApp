@@ -8,5 +8,10 @@ namespace TrashCollector.Contracts
 {
     public interface IAddressRepository : IRepositoryBase<Address>
     {
+        Address GetAddress(int id);
+        int GetAddressId(Address address);
+        void CreateAddress(Address address);
+        bool AddressExists(Address address);
+
     }
 }
