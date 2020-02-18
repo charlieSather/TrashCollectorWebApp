@@ -5,7 +5,12 @@ using System.Threading.Tasks;
 
 namespace TrashCollector.Contracts
 {
-    interface IRepositoryWrapper
+    public interface IRepositoryWrapper
     {
+        ICustomerRepository Customer { get; }
+        IEmployeeRepository Employee { get; }
+        IAddressRepository Address { get; }
+        IPickupRepository Pickup { get; }
+        void Save();
     }
 }

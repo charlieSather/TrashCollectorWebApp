@@ -6,7 +6,7 @@ using TrashCollector.Models;
 
 namespace TrashCollector.Contracts
 {
-    public interface ICustomerRepository : IRepositoryBase<Customer>
+    public interface IPickupRepository : IRepositoryBase<Pickup>
     {
     }
 }

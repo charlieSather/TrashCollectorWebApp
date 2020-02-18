@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
+
 namespace TrashCollector.Models
 {
     public class Address
@@ -12,13 +13,17 @@ namespace TrashCollector.Models
         public int Id { get; set; }
 
         [Display(Name = "Street Address")]
-        public string StreetAdress { get; set; }
+        [Required]
+        public string StreetAddress { get; set; }
+
+        [Required]
         public string City { get; set; }
+
+        [Required]
         public string State { get; set; }
 
         [Display(Name = "Zip Code")]
+        [Required]
         public int ZipCode { get; set; }
-
-
     }
 }

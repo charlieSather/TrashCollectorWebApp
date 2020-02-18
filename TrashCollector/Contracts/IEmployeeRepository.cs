@@ -6,7 +6,7 @@ using TrashCollector.Models;
 
 namespace TrashCollector.Contracts
 {
-    interface IEmployeeRepository : IRepositoryBase<Employee>
+    public interface IEmployeeRepository : IRepositoryBase<Employee>
     {
     }
 }
