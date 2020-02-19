@@ -18,6 +18,7 @@ namespace TrashCollector.Data
         public Customer GetCustomer(int id) => FindByCondition(c => c.Id == id).SingleOrDefault();
         public Customer GetCustomer(string userId) => FindByCondition(c => c.UserId == userId).SingleOrDefault();
         public IQueryable<Customer> GetCustomersByZipCode(int zipCode) => FindByCondition(c => c.Address.ZipCode == zipCode);
+        public IQueryable<Customer> FilterCustomersByPickupDay(string day) => FindByCondition(c => c.Pickup.PickupDay == day);
 
     }
 }

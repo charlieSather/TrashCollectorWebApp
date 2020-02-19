@@ -83,6 +83,13 @@ namespace TrashCollector.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
+
+                    //var user = _userManager.Users.Where(user => user.Email == Input.Email && user.PasswordHash == Input.Password).SingleOrDefault();
+                    //if ()
+                    //{
+
+                    //}
+
                     return LocalRedirect(returnUrl);
                 }
                 if (result.RequiresTwoFactor)

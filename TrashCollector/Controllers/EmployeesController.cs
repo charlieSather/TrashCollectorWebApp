@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using TrashCollector.Contracts;
+using TrashCollector.Models;
 
 namespace TrashCollector.Controllers
 {
@@ -18,17 +19,52 @@ namespace TrashCollector.Controllers
 
         public IActionResult Index()
         {
-            var employee = _repo.Employee.FindByCondition(x => x.UserId == this.User.FindFirstValue(ClaimTypes.NameIdentifier));
-            if(employee is null)
+            if (UserIsVerifiedEmployee())
             {
-                return View();
+                var employee = _repo.Employee.GetEmployee(this.User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+                if (employee is null)
+                {
+                    return RedirectToAction("Create");
+                }
+                var customers = _repo.Customer.GetCustomersByZipCode(employee.ZipCode);
+
+                return View(customers);
             }
-
-
-            return View();
+            else
+            {
+                return RedirectToPage("Login", "Account");
+            }
+           
         }
          
-
         public IActionResult Create() => View();
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Create(Employee employee)
+        {
+            if (UserIsVerifiedEmployee())
+            {
+                if (ModelState.IsValid)
+                {
+                    employee.UserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                    _repo.Employee.CreateEmployee(employee);
+                    _repo.Save();
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    return View(employee);
+                }
+            }
+            else
+            {
+                return RedirectToPage("Login", "Account");
+            }
+        }
+
+
+        public bool UserIsVerifiedEmployee() => User.IsInRole("Employee") && User.Identity.IsAuthenticated;
     }
 }

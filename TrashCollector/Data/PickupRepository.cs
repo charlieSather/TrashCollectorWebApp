@@ -15,7 +15,8 @@ namespace TrashCollector.Data
         }
 
         public void CreatePickup(Pickup pickup) => Create(pickup);
-
         public Pickup GetPickup(int id) => FindByCondition(p => p.Id == id).SingleOrDefault();
+        //public int GetPickupById(Pickup pickup) => FindByCondition(p => p.)
+        public void UpdatePickup(Pickup pickup) => Update(pickup);
     }
 }

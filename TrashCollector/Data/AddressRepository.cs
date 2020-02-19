@@ -17,7 +17,9 @@ namespace TrashCollector.Data
         public void CreateAddress(Address address) => Create(address);
 
         public Address GetAddress(int id) => FindByCondition(a => a.Id == id).SingleOrDefault();
-        public bool AddressExists(Address address) => FindByCondition(a => a.StreetAddress.Equals(address.StreetAddress) && a.State.Equals(address.State) && a.ZipCode.Equals(address.ZipCode)) is null ? false : true;
+        public Address GetAddress(Address address) => FindByCondition(a => a.StreetAddress.Equals(address.StreetAddress) && a.State.Equals(address.State) && a.ZipCode.Equals(address.ZipCode)).SingleOrDefault();
+
+        public bool AddressExists(Address address) => FindByCondition(a => a.StreetAddress.Equals(address.StreetAddress) && a.State.Equals(address.State) && a.ZipCode.Equals(address.ZipCode)) is null ? true : false;
 
         public int GetAddressId(Address address)
         {
