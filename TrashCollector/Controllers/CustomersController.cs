@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using TrashCollector.Contracts;
 using TrashCollector.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace TrashCollector.Controllers
 {
@@ -22,7 +23,7 @@ namespace TrashCollector.Controllers
             {
                 var customer = _repo.Customer.GetCustomer(this.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-                if(customer is null)
+                if (customer is null)
                 {
                     return RedirectToAction("Create");
                 }
@@ -63,7 +64,7 @@ namespace TrashCollector.Controllers
                     var customer = customerViewModel.Customer;
                     customer.UserId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-                    if(!_repo.Address.AddressExists(customerViewModel.Address))
+                    if (!_repo.Address.AddressExists(customerViewModel.Address))
                     {
                         _repo.Address.CreateAddress(customerViewModel.Address);
                         _repo.Save();
@@ -92,7 +93,7 @@ namespace TrashCollector.Controllers
             }
             else
             {
-                return RedirectToAction("Index","Home");
+                return RedirectToAction("Index", "Home");
 
             }
         }
@@ -104,7 +105,7 @@ namespace TrashCollector.Controllers
             if (UserIsVerifiedCustomer())
             {
                 var pickupFromDb = _repo.Pickup.GetPickup(customerViewModel.Pickup.Id);
-                if(pickupFromDb != null)
+                if (pickupFromDb != null)
                 {
                     pickupFromDb.PickupDay = customerViewModel.Pickup.PickupDay;
                     _repo.Pickup.UpdatePickup(pickupFromDb);
@@ -121,6 +122,7 @@ namespace TrashCollector.Controllers
         {
             if (UserIsVerifiedCustomer())
             {
+
                 var pickupFromDb = _repo.Pickup.GetPickup(customerViewModel.Pickup.Id);
                 if (pickupFromDb != null)
                 {
@@ -129,6 +131,8 @@ namespace TrashCollector.Controllers
                     _repo.Save();
                     return RedirectToAction("Index");
                 }
+
+
             }
             return RedirectToAction("Index", "Home");
         }

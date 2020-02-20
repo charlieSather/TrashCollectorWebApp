@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TrashCollector.Data;
 
-namespace TrashCollector.Data.Migrations
+namespace TrashCollector.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
@@ -48,15 +48,15 @@ namespace TrashCollector.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "a7ccc683-037d-4297-b36a-de77291f156b",
-                            ConcurrencyStamp = "e7c47f2a-b41b-42f4-806b-fa0bad1943e2",
+                            Id = "10e21d92-2432-4e21-ae0e-7d1abb38f863",
+                            ConcurrencyStamp = "1e1206e4-eef7-4133-b982-80bb901dd6dd",
                             Name = "Customer",
                             NormalizedName = "CUSTOMER"
                         },
                         new
                         {
-                            Id = "a59f40b5-bca2-4a0c-b96a-dd8bc8b76e7c",
-                            ConcurrencyStamp = "6538b43b-2fd5-477d-9ad5-45f7a729ffff",
+                            Id = "6131afff-399d-4bef-a65e-e7ad8b2f4ed7",
+                            ConcurrencyStamp = "124b5423-44f8-4414-8da0-eb0710668641",
                             Name = "Employee",
                             NormalizedName = "EMPLOYEE"
                         });
@@ -280,7 +280,6 @@ namespace TrashCollector.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -309,7 +308,6 @@ namespace TrashCollector.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("ZipCode")
@@ -335,8 +333,8 @@ namespace TrashCollector.Data.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("IsSuspended")
-                        .HasColumnType("int");
+                    b.Property<bool>("IsSuspended")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime>("OneTimePickup")
                         .HasColumnType("datetime2");
@@ -420,18 +418,14 @@ namespace TrashCollector.Data.Migrations
 
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "IdentityUser")
                         .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("TrashCollector.Models.Employee", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "IdentityUser")
                         .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
                 });
 #pragma warning restore 612, 618
         }

@@ -35,9 +35,8 @@ namespace TrashCollector.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
-           
         }
-         
+
         public IActionResult Create() => View();
 
         [HttpPost]
@@ -64,6 +63,26 @@ namespace TrashCollector.Controllers
             }
         }
 
+        public IActionResult PickUpTrash(int id)
+        {
+            if (UserIsVerifiedEmployee())
+            {
+                var pickupFromDb = _repo.Pickup.GetPickup(id);
+                if (pickupFromDb != null)
+                {
+                    pickupFromDb.Balance += 5;
+                    _repo.Pickup.UpdatePickup(pickupFromDb);
+                    _repo.Save();
+                    return RedirectToAction("Index");
+                }
+            }
+            return RedirectToAction("Index", "Home");
+        }
+
         public bool UserIsVerifiedEmployee() => User.IsInRole("Employee") && User.Identity.IsAuthenticated;
+        //public bool IsSup()
+        //{
+        //    var pickups = _repo.Pickup.GetPickups();
+        //}
     }
 }

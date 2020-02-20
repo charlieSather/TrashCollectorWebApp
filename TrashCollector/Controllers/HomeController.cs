@@ -21,7 +21,7 @@ namespace TrashCollector.Controllers
 
         public IActionResult Index()
         {
-            if(User.Identity.IsAuthenticated)
+            if (this.User.Identity.IsAuthenticated)
             {
                 return this.User.FindFirst(ClaimTypes.Role).Value switch
                 {
