@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +25,15 @@ namespace TrashCollector.Contracts
         {
             return ApplicationDbContext.Set<T>().Where(expression).AsNoTracking();
         }
+        public IQueryable<T> FindByConditionWithInclude<K,P>(Expression<Func<T, bool>> expression, Expression<Func<T,K>> addressExpression, Expression<Func<T,P>> pickupExpression)
+        {
+            return ApplicationDbContext.Set<T>().Include(addressExpression).Include(pickupExpression).Where(expression).AsNoTracking();
+        }
+        //public IQueryable<T> FindByConditionWithInclude(Expression<Func<T, bool>> expression, string address, string pickup)
+        //{
+        //    return ApplicationDbContext.Set<T>().Include(expression).Include(pickup).Where(expression).AsNoTracking();
+        //}
+
         public void Create(T entity)
         {
             ApplicationDbContext.Set<T>().Add(entity);
@@ -35,5 +46,6 @@ namespace TrashCollector.Contracts
         {
             ApplicationDbContext.Set<T>().Remove(entity);
         }
+  
     }
 }

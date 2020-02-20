@@ -39,7 +39,6 @@ namespace TrashCollector.Controllers
                 return RedirectToAction("Index", "Home");
             }
         }
-        //public IActionResult Create() => View();
 
         public IActionResult Create()
         {
@@ -98,9 +97,41 @@ namespace TrashCollector.Controllers
             }
         }
 
-        //public IActionResult CreateCustomer() => View();
-        //public IActionResult CreateAddress() => View();
-        //public IActionResult CreatePickup() => View();
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult UpdatePickupDay(CustomerViewModel customerViewModel)
+        {
+            if (UserIsVerifiedCustomer())
+            {
+                var pickupFromDb = _repo.Pickup.GetPickup(customerViewModel.Pickup.Id);
+                if(pickupFromDb != null)
+                {
+                    pickupFromDb.PickupDay = customerViewModel.Pickup.PickupDay;
+                    _repo.Pickup.UpdatePickup(pickupFromDb);
+                    _repo.Save();
+                    return RedirectToAction("Index");
+                }
+            }
+            return RedirectToAction("Index", "Home");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult UpdateOneTimePickup(CustomerViewModel customerViewModel)
+        {
+            if (UserIsVerifiedCustomer())
+            {
+                var pickupFromDb = _repo.Pickup.GetPickup(customerViewModel.Pickup.Id);
+                if (pickupFromDb != null)
+                {
+                    pickupFromDb.OneTimePickup = customerViewModel.Pickup.OneTimePickup;
+                    _repo.Pickup.UpdatePickup(pickupFromDb);
+                    _repo.Save();
+                    return RedirectToAction("Index");
+                }
+            }
+            return RedirectToAction("Index", "Home");
+        }
         public bool UserIsVerifiedCustomer() => User.IsInRole("Customer") && User.Identity.IsAuthenticated;
     }
 }

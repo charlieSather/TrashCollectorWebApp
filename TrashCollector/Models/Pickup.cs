@@ -20,14 +20,20 @@ namespace TrashCollector.Models
         public string PickupDay { get; set; }
 
         [Required]
+        [DataType(DataType.Date)]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         [Display(Name= "One Time Pickup")]
         public DateTime OneTimePickup { get; set; }
 
         [Required]
+        [DataType(DataType.Date)]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         [Display(Name="Start Date")]
         public DateTime StartDate { get; set; }
 
         [Required]
+        [DataType(DataType.Date)]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
         [Display(Name= "End Date")]
         public DateTime EndDate { get; set; }
 

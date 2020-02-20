@@ -11,31 +11,70 @@
     <h4>Customer</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Customer.FirstName)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Customer.FirstName)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Customer.LastName)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Customer.LastName)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Customer.AddressId)
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Pickup.StartDate)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Customer.AddressId)
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Pickup.StartDate)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Customer.PickupId)
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Pickup.EndDate)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Customer.PickupId)
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Pickup.EndDate)
         </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Pickup.PickupDay)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Pickup.PickupDay)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Pickup.OneTimePickup)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Pickup.OneTimePickup)
+        </dd>
+
     </dl>
+
+    <form asp-action="UpdatePickupDay">
+        <div class="form-group">
+            <input type="hidden" asp-for="Pickup.Id" />
+            <label asp-for="Pickup.PickupDay" class="control-label"></label>
+            <select asp-for="Pickup.PickupDay" class="form-control" asp-items="@Model.Pickup.Days"></select>
+            <span asp-validation-for="Pickup.PickupDay" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <input type="submit" value="Change PickupDay" class="btn btn-outline-dark" />
+        </div>
+    </form>
+
+    <form asp-action="UpdateOneTimePickup">
+        <div class="form-group">
+            <input type="hidden" asp-for="Pickup.Id" />
+            <label asp-for="Pickup.OneTimePickup" class="control-label"></label>
+            <input asp-for="Pickup.OneTimePickup" class="form-control">
+            <span asp-validation-for="Pickup.OneTimePickup" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <input type="submit" value="Change one time pickup" class="btn btn-outline-dark" />
+        </div>
+    </form>
 </div>
 <div>
     @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |

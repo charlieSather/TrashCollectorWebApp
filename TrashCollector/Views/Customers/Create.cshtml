@@ -43,6 +43,11 @@
                 <span asp-validation-for="Address.ZipCode" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="Pickup.OneTimePickup" class="control-label"></label>
+                <input asp-for="Pickup.OneTimePickup" class="form-control" />
+                <span asp-validation-for="Pickup.OneTimePickup" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="Pickup.StartDate" class="control-label"></label>
                 <input asp-for="Pickup.StartDate" class="form-control" />
                 <span asp-validation-for="Pickup.StartDate" class="text-danger"></span>

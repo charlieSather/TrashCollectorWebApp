@@ -27,13 +27,13 @@ namespace TrashCollector.Controllers
                 {
                     return RedirectToAction("Create");
                 }
-                var customers = _repo.Customer.GetCustomersByZipCode(employee.ZipCode);
+                var customers = _repo.Customer.GetCustomersByZipCode(employee.ZipCode).ToList();
 
                 return View(customers);
             }
             else
             {
-                return RedirectToPage("Login", "Account");
+                return RedirectToAction("Index", "Home");
             }
            
         }
@@ -60,10 +60,9 @@ namespace TrashCollector.Controllers
             }
             else
             {
-                return RedirectToPage("Login", "Account");
+                return RedirectToAction("Index", "Home");
             }
         }
-
 
         public bool UserIsVerifiedEmployee() => User.IsInRole("Employee") && User.Identity.IsAuthenticated;
     }
