@@ -15,6 +15,7 @@ namespace TrashCollector
         private IEmployeeRepository _employee;
         private IAddressRepository _address;
         private IPickupRepository _pickup;
+        private ITransactionRepository _transaction;
 
 
         public ICustomerRepository Customer
@@ -62,6 +63,18 @@ namespace TrashCollector
                     _pickup = new PickupRepository(_context);
                 }
                 return _pickup;
+            }
+        }
+        
+        public ITransactionRepository Transaction
+        {
+            get
+            {
+                if(_transaction is null)
+                {
+                    _transaction = new TransactionRepository(_context);
+                }
+                return _transaction;
             }
         }
 

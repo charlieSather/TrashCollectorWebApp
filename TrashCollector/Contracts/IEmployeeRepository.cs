@@ -11,7 +11,5 @@ namespace TrashCollector.Contracts
         Employee GetEmployee(int id);
         Employee GetEmployee(string userId);
         void CreateEmployee(Employee employee);
-
-
     }
 }

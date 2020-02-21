@@ -48,15 +48,15 @@ namespace TrashCollector.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "10e21d92-2432-4e21-ae0e-7d1abb38f863",
-                            ConcurrencyStamp = "1e1206e4-eef7-4133-b982-80bb901dd6dd",
+                            Id = "3d9bf3e7-aeff-4572-8bcc-39e6e1e57c6d",
+                            ConcurrencyStamp = "8cf2c2c7-725a-4db5-b582-789d44ee7e6c",
                             Name = "Customer",
                             NormalizedName = "CUSTOMER"
                         },
                         new
                         {
-                            Id = "6131afff-399d-4bef-a65e-e7ad8b2f4ed7",
-                            ConcurrencyStamp = "124b5423-44f8-4414-8da0-eb0710668641",
+                            Id = "1b35d161-d7ec-4f43-9d50-3e1082d36ada",
+                            ConcurrencyStamp = "a5a75de3-0216-4648-9c74-417fc27160b8",
                             Name = "Employee",
                             NormalizedName = "EMPLOYEE"
                         });
@@ -351,6 +351,34 @@ namespace TrashCollector.Migrations
                     b.ToTable("Pickups");
                 });
 
+            modelBuilder.Entity("TrashCollector.Models.Transaction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<decimal>("ChargeAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("ChargeDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.ToTable("Transactions");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -426,6 +454,21 @@ namespace TrashCollector.Migrations
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "IdentityUser")
                         .WithMany()
                         .HasForeignKey("UserId");
+                });
+
+            modelBuilder.Entity("TrashCollector.Models.Transaction", b =>
+                {
+                    b.HasOne("TrashCollector.Models.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TrashCollector.Models.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

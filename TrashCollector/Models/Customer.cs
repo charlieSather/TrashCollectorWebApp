@@ -35,5 +35,8 @@ namespace TrashCollector.Models
         public string UserId { get; set; }
         public IdentityUser IdentityUser { get; set; }
 
+        [NotMapped]
+        IEnumerable<Transaction> Transactions { get; set; }
+
     }
 }

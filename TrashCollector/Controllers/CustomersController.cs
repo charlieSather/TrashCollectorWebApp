@@ -28,12 +28,7 @@ namespace TrashCollector.Controllers
                     return RedirectToAction("Create");
                 }
 
-                var model = new CustomerViewModel();
-                model.Customer = customer;
-                model.Address = _repo.Address.GetAddress(customer.AddressId);
-                model.Pickup = _repo.Pickup.GetPickup(customer.PickupId);
-
-                return View(model);
+                return View(new CustomerViewModel() { Customer = customer, Address = customer.Address, Pickup = customer.Pickup });
             }
             else
             {
@@ -63,6 +58,13 @@ namespace TrashCollector.Controllers
                 {
                     var customer = customerViewModel.Customer;
                     customer.UserId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+                    if (IsValidStartEndDate(customerViewModel.Pickup.StartDate, customerViewModel.Pickup.EndDate))
+                    {
+                        ModelState.AddModelError("Pickup.StartDate","Start date needs to be earlier than end date");
+                        return View(customerViewModel);
+                    }
+
 
                     if (!_repo.Address.AddressExists(customerViewModel.Address))
                     {
@@ -171,9 +173,9 @@ namespace TrashCollector.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    if(svm.StartDate.Date >= svm.EndDate.Date)
+                    if (IsValidStartEndDate(svm.StartDate.Date,svm.EndDate.Date))
                     {
-                        ModelState.AddModelError("", "Start date can not be the same or past the end date");
+                        ModelState.AddModelError("StartDate", "Start date can not be the same or past the end date");
                         return View("Suspension", svm);
                     }
 
@@ -200,5 +202,6 @@ namespace TrashCollector.Controllers
             }
         }
         public bool UserIsVerifiedCustomer() => User.IsInRole("Customer") && User.Identity.IsAuthenticated;
+        public bool IsValidStartEndDate(DateTime start, DateTime end) => start.Date >= end.Date;
     }
 }

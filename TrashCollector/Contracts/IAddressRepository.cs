@@ -13,6 +13,5 @@ namespace TrashCollector.Contracts
         int GetAddressId(Address address);
         void CreateAddress(Address address);
         bool AddressExists(Address address);
-
     }
 }

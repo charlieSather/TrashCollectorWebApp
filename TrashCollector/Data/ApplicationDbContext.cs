@@ -19,7 +19,7 @@ namespace TrashCollector.Data
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Address> Addresses { get; set; }
         public DbSet<Pickup> Pickups { get; set; }
-
+        public DbSet<Transaction> Transactions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
