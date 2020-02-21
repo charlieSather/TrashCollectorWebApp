@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace TrashCollector.Models
 {
-    public class CustomerViewModel
+    public class DateChecker : ValidationAttribute
     {
-        public Customer Customer { get; set; }
-        public Address Address { get; set; }
-        public Pickup Pickup { get; set; }
+        public override bool IsValid(object value) => Convert.ToDateTime(value).Date >= DateTime.Now.Date;
     }
 }

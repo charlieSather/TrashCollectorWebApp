@@ -136,6 +136,69 @@ namespace TrashCollector.Controllers
             }
             return RedirectToAction("Index", "Home");
         }
+
+        public IActionResult UpdateSuspensionDates()
+        {
+            if (UserIsVerifiedCustomer())
+            {
+                var customer = _repo.Customer.GetCustomer(this.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+                if (customer is null)
+                {
+                    return RedirectToAction("Create");
+                }
+
+                return View("Suspension", new SuspensionViewModel { StartDate = customer.Pickup.StartDate, EndDate = customer.Pickup.EndDate });
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult UpdateSuspensionDates(SuspensionViewModel svm)
+        {
+            if (UserIsVerifiedCustomer())
+            {
+                var customer = _repo.Customer.GetCustomer(this.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+                if (customer is null)
+                {
+                    return RedirectToAction("Create");
+                }
+
+                if (ModelState.IsValid)
+                {
+                    if(svm.StartDate.Date >= svm.EndDate.Date)
+                    {
+                        ModelState.AddModelError("", "Start date can not be the same or past the end date");
+                        return View("Suspension", svm);
+                    }
+
+
+                    customer.Pickup.StartDate = svm.StartDate;
+                    customer.Pickup.EndDate = svm.EndDate;
+
+                    var currentDate = DateTime.Now.Date;
+                    customer.Pickup.IsSuspended = currentDate >= svm.StartDate ? (currentDate < svm.EndDate ? false : true) : true;
+
+
+                    _repo.Pickup.UpdatePickup(customer.Pickup);
+                    _repo.Save();
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    return View("Suspension", svm);
+                }
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
+        }
         public bool UserIsVerifiedCustomer() => User.IsInRole("Customer") && User.Identity.IsAuthenticated;
     }
 }

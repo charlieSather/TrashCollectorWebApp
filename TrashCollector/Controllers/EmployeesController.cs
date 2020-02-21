@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TrashCollector.Contracts;
 using TrashCollector.Models;
@@ -27,9 +28,29 @@ namespace TrashCollector.Controllers
                 {
                     return RedirectToAction("Create");
                 }
-                var customers = _repo.Customer.GetCustomersByZipCode(employee.ZipCode).ToList();
 
-                return View(customers);
+                var customers = _repo.Customer.GetCustomersByZipCodeAndPickupDay(employee.ZipCode, DateTime.Today.DayOfWeek.ToString()).ToList();
+                return View(new EmployeeViewModel { Customers = customers, Employee = employee });
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
+        }
+        public IActionResult FilterByDay(EmployeeViewModel cvm)
+        {
+            if (UserIsVerifiedEmployee())
+            {
+                var employee = _repo.Employee.GetEmployee(this.User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+                if (employee is null)
+                {
+                    return RedirectToAction("Create");
+                }
+
+                var customers = _repo.Customer.GetCustomersByZipCodeAndPickupDay(employee.ZipCode, cvm.Day).ToList();
+
+                return View("Index", new EmployeeViewModel { Customers = customers, Employee = employee });
             }
             else
             {
@@ -62,7 +83,7 @@ namespace TrashCollector.Controllers
                 return RedirectToAction("Index", "Home");
             }
         }
-
+ 
         public IActionResult PickUpTrash(int id)
         {
             if (UserIsVerifiedEmployee())

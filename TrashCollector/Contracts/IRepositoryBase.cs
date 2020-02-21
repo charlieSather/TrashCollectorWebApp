@@ -10,7 +10,9 @@ namespace TrashCollector.Contracts
     {
         IQueryable<T> FindAll();
         IQueryable<T> FindByCondition(Expression<Func<T, bool>> expression);
-        IQueryable<T> FindByConditionWithInclude<K, P>(Expression<Func<T, bool>> expression, Expression<Func<T, K>> addressExpression, Expression<Func<T, P>> pickupExpression);
+        IQueryable<T> FindByConditionWithInclude<TEntity1, TEntity2>(Expression<Func<T, bool>> expression, Expression<Func<T, TEntity1>> entityOneExpression, Expression<Func<T, TEntity2>> entityTwoExpression);
+        IQueryable<T> FindByConditionWithInclude<TEntity>(Expression<Func<T, bool>> expression, Expression<Func<T, TEntity>> entityOneExpression);
+
         void Create(T entity); 
         void Update(T entity); 
         void Delete(T entity);

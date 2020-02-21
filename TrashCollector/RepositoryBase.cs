@@ -25,15 +25,14 @@ namespace TrashCollector.Contracts
         {
             return ApplicationDbContext.Set<T>().Where(expression).AsNoTracking();
         }
-        public IQueryable<T> FindByConditionWithInclude<K,P>(Expression<Func<T, bool>> expression, Expression<Func<T,K>> addressExpression, Expression<Func<T,P>> pickupExpression)
+        public IQueryable<T> FindByConditionWithInclude<TEntity1, TEntity2>(Expression<Func<T, bool>> expression, Expression<Func<T, TEntity1>> entityOneExpression, Expression<Func<T, TEntity2>> entityTwoExpression)
         {
-            return ApplicationDbContext.Set<T>().Include(addressExpression).Include(pickupExpression).Where(expression).AsNoTracking();
+            return ApplicationDbContext.Set<T>().Include(entityOneExpression).Include(entityTwoExpression).Where(expression).AsNoTracking();
         }
-        //public IQueryable<T> FindByConditionWithInclude(Expression<Func<T, bool>> expression, string address, string pickup)
-        //{
-        //    return ApplicationDbContext.Set<T>().Include(expression).Include(pickup).Where(expression).AsNoTracking();
-        //}
-
+        public IQueryable<T> FindByConditionWithInclude<TEntity>(Expression<Func<T, bool>> expression, Expression<Func<T, TEntity>> entityExpression)
+        {
+            return ApplicationDbContext.Set<T>().Include(entityExpression).Where(expression).AsNoTracking();
+        }
         public void Create(T entity)
         {
             ApplicationDbContext.Set<T>().Add(entity);

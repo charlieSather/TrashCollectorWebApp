@@ -22,25 +22,26 @@ namespace TrashCollector.Models
 
         [Required]
         [DataType(DataType.Date)]
-        [Range(typeof(DateTime),"2/15/2020","12/12/2100", ErrorMessage="Invalid date")]
-        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:MM/dd/yyyy}")]
+        [DateChecker(ErrorMessage ="Invalid Date selected")]
+        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}")]
         [Display(Name = "One Time Pickup")]
         public DateTime OneTimePickup { get; set; }
 
         [Required]
         [DataType(DataType.Date)]
-        [Range(typeof(DateTime), "2/15/2020", "12/12/2100", ErrorMessage = "Invalid date")]
-        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:MM/dd/yyyy}")]
+        [DateChecker(ErrorMessage = "Invalid Date selected")]
+        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}")]
         [Display(Name = "Start Date")]
         public DateTime StartDate { get; set; }
 
         [Required]
         [DataType(DataType.Date)]
-        [Range(typeof(DateTime), "2/15/2020", "12/12/2100", ErrorMessage = "Invalid date")]
-        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:MM/dd/yyyy}")]
+        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}")]
+        [DateChecker(ErrorMessage = "Invalid Date selected")]
         [Display(Name = "End Date")]
         public DateTime EndDate { get; set; }
 
+        [Display(Name ="Pickup Status")]
         public bool IsSuspended { get; set; }
 
         [NotMapped]
@@ -51,7 +52,6 @@ namespace TrashCollector.Models
                 return new SelectList(new List<string> { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" });
             }
         }
-
     }
 
 }

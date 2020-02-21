@@ -1,4 +1,4 @@
-﻿@model IEnumerable<TrashCollector.Models.Customer>
+﻿@model TrashCollector.Models.EmployeeViewModel;
 
 @{
     ViewData["Title"] = "Index";
@@ -6,39 +6,42 @@
 }
 
 <h1 class="text-center">Customers</h1>
+<h1 class="text-center">@DateTime.Today.DayOfWeek.ToString()</h1>
 
-@*<form asp-action="UpdatePickupDay">
+<form class="form-group" asp-action="FilterByDay" method="get">
     <div class="form-group">
-        <input type="hidden" asp-for="Pickup.Id" />
-        <label asp-for="Pickup.PickupDay" class="control-label"></label>
-        <select asp-for="Pickup.PickupDay" class="form-control" asp-items="@Model.Pickup.Days"></select>
-        <span asp-validation-for="Pickup.PickupDay" class="text-danger"></span>
+        <label class="control-label">Select Day</label>
+        <select asp-for="Day" class="control-label" asp-items="@Model.Days"></select>
     </div>
 
     <div class="form-group">
-        <input type="submit" value="Change PickupDay" class="btn btn-outline-dark" />
+        <input type="submit" value="Filter by Day" class="btn btn-outline-dark" />
     </div>
-</form>*@
+
+</form>
+
+@*<a asp-action="FilterByDay" asp-route-day="@Html."></a>*@
+
 
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.FirstName)
+                First Name
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.LastName)
+                Last Name
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Address)
+                Address
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-        @if (Model != null)
+        @if (Model.Customers != null)
         {
-            @foreach (var item in Model)
+            @foreach (var item in Model.Customers)
             {
                 <tr>
                     <td>
@@ -51,7 +54,7 @@
                         @Html.DisplayFor(modelItem => item.Address.StreetAddress)
                     </td>
                     <td>
-                        <a asp-action="PickupTrash" asp-route-id="@item.Id">Pickup Trash</a> 
+                        <a asp-action="PickupTrash" asp-route-id="@item.Id">Pickup Trash</a>
                     </td>
                 </tr>
             }

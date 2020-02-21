@@ -53,6 +53,12 @@
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Pickup.Balance)
         </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Pickup.IsSuspended)
+        </dt>
+        <dd class="col-sm-10">
+            @(Model.Pickup.IsSuspended ? "Suspended":"Active")
+        </dd>
 
     </dl>
 
@@ -80,6 +86,7 @@
             <input type="submit" value="Change one time pickup" class="btn btn-outline-dark" />
         </div>
     </form>
+    <button class="btn btn-outline-dark" onclick="location.href = '@Url.Action("UpdateSuspensionDates")';return false;" >Update Pickup Dates</button>
 </div>
 <div>
     @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |

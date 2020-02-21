@@ -27,6 +27,7 @@ namespace TrashCollector.Controllers
                 {
                     ("Customer") => RedirectToAction("Index", "Customers"),
                     ("Employee") => RedirectToAction("Index", "Employees"),
+                    //_ => Redirect("./Identity/Account/Login"),
                     _ => Redirect("./Identity/Account/Login"),
                 };
             }
