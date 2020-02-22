@@ -21,6 +21,7 @@ namespace TrashCollector.Data
         public IQueryable<Customer> GetCustomersByZipCode(int zipCode) => FindByCondition(c => c.Address.ZipCode == zipCode).Include(c => c.Address).Include(c => c.Pickup);
         public IQueryable<Customer> GetCustomersByZipCodeAndPickupDay(int zipCode, string day) => FindByConditionWithInclude(c => c.Address.ZipCode == zipCode && c.Pickup.PickupDay == day, a => a.Address, p => p.Pickup);
         public IQueryable<Customer> FilterCustomersByPickupDay(string day) => FindByCondition(c => c.Pickup.PickupDay == day);
+        public IQueryable<Customer> GetCustomers() => FindAll().Include(c => c.Address).Include(c => c.Pickup);
 
     }
 }

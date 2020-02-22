@@ -11,6 +11,7 @@ namespace TrashCollector.Contracts
         IEmployeeRepository Employee { get; }
         IAddressRepository Address { get; }
         IPickupRepository Pickup { get; }
+        ITransactionRepository Transaction { get; }
         void Save();
     }
 }

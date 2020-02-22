@@ -124,7 +124,13 @@ namespace TrashCollector.Controllers
         {
             if (UserIsVerifiedCustomer())
             {
+                if(customerViewModel.Pickup.OneTimePickup.Date < DateTime.Now.Date)
+                {
+                    ModelState.AddModelError("Pickup.OneTimePickup","How does one pickup trash from the past?");
+                    var customer = _repo.Customer.GetCustomer(this.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+                    return View("Index", new CustomerViewModel { Customer = customer, Address = customer.Address, Pickup = customer.Pickup });
 
+                }
                 var pickupFromDb = _repo.Pickup.GetPickup(customerViewModel.Pickup.Id);
                 if (pickupFromDb != null)
                 {
@@ -156,6 +162,16 @@ namespace TrashCollector.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
+        }
+        public IActionResult Transactions(int id)
+        {
+            if (UserIsVerifiedCustomer())
+            {
+                var model = _repo.Transaction.GetCustomersTransactionsThisMonth(id).ToList();
+
+                return View(model);
+            }
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpPost]

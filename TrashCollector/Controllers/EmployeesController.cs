@@ -29,7 +29,16 @@ namespace TrashCollector.Controllers
                     return RedirectToAction("Create");
                 }
 
-                var customers = _repo.Customer.GetCustomersByZipCodeAndPickupDay(employee.ZipCode, DateTime.Today.DayOfWeek.ToString()).ToList();
+                //var customers =
+                //    from customer in _repo.Customer.GetCustomersByZipCodeAndPickupDay(employee.ZipCode, DateTime.Today.DayOfWeek.ToString())
+                //    join transaction in _repo.Transaction.GetTransactionsToday(DateTime.Now) on customer.Id equals transaction.Id into joinGroup
+                //    from transaction in joinGroup.DefaultIfEmpty()
+                //    where transaction == null
+                //    select customer;
+
+                var customers = _repo.Customer.GetCustomersByZipCodeAndPickupDay(employee.ZipCode, DateTime.Today.DayOfWeek.ToString()).Except(_repo.Transaction.GetTransactionsToday(DateTime.Now).Select(t => t.Customer)).ToList();
+
+
                 return View(new EmployeeViewModel { Customers = customers, Employee = employee });
             }
             else
@@ -41,21 +50,18 @@ namespace TrashCollector.Controllers
         {
             if (UserIsVerifiedEmployee())
             {
+                 if(SelectedDayIsToday(cvm.Day)) return RedirectToAction("Index");
+
                 var employee = _repo.Employee.GetEmployee(this.User.FindFirstValue(ClaimTypes.NameIdentifier));
 
-                if (employee is null)
-                {
-                    return RedirectToAction("Create");
-                }
+                if (employee is null) return RedirectToAction("Create");
 
                 var customers = _repo.Customer.GetCustomersByZipCodeAndPickupDay(employee.ZipCode, cvm.Day).ToList();
 
-                return View("Index", new EmployeeViewModel { Customers = customers, Employee = employee });
+                return View("Index", new EmployeeViewModel { Customers = customers, Employee = employee, HidePickupTrash = true });
             }
-            else
-            {
-                return RedirectToAction("Index", "Home");
-            }
+         
+            return RedirectToAction("Index", "Home");
         }
 
         public IActionResult Create() => View();
@@ -83,16 +89,19 @@ namespace TrashCollector.Controllers
                 return RedirectToAction("Index", "Home");
             }
         }
- 
+
         public IActionResult PickUpTrash(int id)
         {
             if (UserIsVerifiedEmployee())
             {
-                var pickupFromDb = _repo.Pickup.GetPickup(id);
-                if (pickupFromDb != null)
+                var customerFromDb = _repo.Customer.GetCustomer(id);
+
+                if (customerFromDb != null)
                 {
-                    pickupFromDb.Balance += 5;
-                    _repo.Pickup.UpdatePickup(pickupFromDb);
+                    var employee = _repo.Employee.GetEmployee(this.User.FindFirstValue(ClaimTypes.NameIdentifier));
+                    customerFromDb.Pickup.Balance += 5;
+                    _repo.Transaction.CreateTransaction(new Transaction { ChargeDate = DateTime.Today, ChargeAmount = 5, CustomerId = customerFromDb.Id, EmployeeId = employee.Id });
+                    _repo.Pickup.UpdatePickup(customerFromDb.Pickup);
                     _repo.Save();
                     return RedirectToAction("Index");
                 }
@@ -101,6 +110,7 @@ namespace TrashCollector.Controllers
         }
 
         public bool UserIsVerifiedEmployee() => User.IsInRole("Employee") && User.Identity.IsAuthenticated;
+        public bool SelectedDayIsToday(string day) => day == DateTime.Today.DayOfWeek.ToString();
         //public bool IsSup()
         //{
         //    var pickups = _repo.Pickup.GetPickups();

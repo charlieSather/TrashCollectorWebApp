@@ -5,18 +5,21 @@
     Layout = "~/Views/Shared/_EmployeeLayout.cshtml";
 }
 
+
 <h1 class="text-center">Customers</h1>
 <h1 class="text-center">@DateTime.Today.DayOfWeek.ToString()</h1>
 
-<form class="form-group" asp-action="FilterByDay" method="get">
+<form class="form-group" asp-action="FilterByDay" method="get" id="myForm">
     <div class="form-group">
         <label class="control-label">Select Day</label>
-        <select asp-for="Day" class="control-label" asp-items="@Model.Days"></select>
+        <select asp-for="Day" class="control-label" asp-items="@Model.Days" onchange="filterByDay();">
+            <option value="" selected disabled>Select Day</option>
+        </select>
     </div>
 
-    <div class="form-group">
-        <input type="submit" value="Filter by Day" class="btn btn-outline-dark" />
-    </div>
+    @*<div class="form-group">
+            <input type="submit" value="Filter by Day" class="btn btn-outline-dark" />
+        </div>*@
 </form>
 
 @*<a asp-action="FilterByDay" asp-route-day="@Html."></a>*@
@@ -52,12 +55,22 @@
                     <td>
                         @Html.DisplayFor(modelItem => item.Address.StreetAddress)
                     </td>
-                    <td>
-                        <a asp-action="PickupTrash" asp-route-id="@item.Id">Pickup Trash</a>
-                    </td>
+                    @if (!Model.HidePickupTrash)
+                    {
+                        <td>
+                            <a asp-action="PickupTrash" asp-route-id="@item.Id">Pickup Trash</a>
+                        </td>
+                    }
                 </tr>
             }
         }
 
     </tbody>
 </table>
+
+
+<script>
+    function filterByDay() {
+        $("#myForm").submit();
+    }
+</script>
