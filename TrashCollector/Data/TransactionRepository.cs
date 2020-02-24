@@ -25,10 +25,17 @@ namespace TrashCollector.Data
         public IQueryable<Transaction> GetCustomersTransactionsThisMonth(int customerId) =>
             FindByCondition(t => t.CustomerId == customerId && t.ChargeDate.Month == DateTime.Today.Month && t.ChargeDate.Year == DateTime.Today.Year)
                 .Include(t => t.Customer).ThenInclude(c => c.Address).Include(t => t.Customer).ThenInclude(c => c.Pickup).Include(t => t.Employee);
+        public IQueryable<Transaction> GetCustomersTransactions(int customerId) =>
+            FindByCondition(t => t.CustomerId == customerId)
+                .Include(t => t.Customer).ThenInclude(c => c.Address).Include(t => t.Customer).ThenInclude(c => c.Pickup).Include(t => t.Employee);
 
         public IQueryable<Transaction> GetTransactionsToday(DateTime today) =>
             FindByCondition(t => t.ChargeDate.Date == today.Date)
                 .Include(t => t.Customer).ThenInclude(c => c.Address).Include(t => t.Customer).ThenInclude(c => c.Pickup).Include(t => t.Employee);
+        public IQueryable<Transaction> GetEmployeeTransactionsToday(int employeeId) =>
+           FindByCondition(t => t.EmployeeId == employeeId && t.ChargeDate.Date == DateTime.Now.Date)
+               .Include(t => t.Customer).ThenInclude(c => c.Address).Include(t => t.Customer).ThenInclude(c => c.Pickup).Include(t => t.Employee);
+
 
     }
 }

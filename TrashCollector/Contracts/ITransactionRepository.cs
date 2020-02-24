@@ -10,7 +10,9 @@ namespace TrashCollector.Contracts
         IQueryable<Transaction> GetTransactions();
         IQueryable<Transaction> GetTransactionsToday(DateTime today);
         IQueryable<Transaction> GetCustomersTransactionsThisMonth(int customerId);
+        IQueryable<Transaction> GetCustomersTransactions(int customerId);
         IQueryable<Customer> GetCustomers(int zipCode, string day);
+        IQueryable<Transaction> GetEmployeeTransactionsToday(int employeeId);
         void CreateTransaction(Transaction transaction);
     }
 }

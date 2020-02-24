@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc;
 using TrashCollector.Contracts;
 using TrashCollector.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TrashCollector.Controllers
 {
+    [Authorize(Roles = "Customer")]
     public class CustomersController : Controller
     {
         private readonly IRepositoryWrapper _repo;
@@ -19,8 +21,8 @@ namespace TrashCollector.Controllers
         }
         public IActionResult Index()
         {
-            if (UserIsVerifiedCustomer())
-            {
+            //if (UserIsVerifiedCustomer())
+            //{
                 var customer = _repo.Customer.GetCustomer(this.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
                 if (customer is null)
@@ -29,11 +31,11 @@ namespace TrashCollector.Controllers
                 }
 
                 return View(new CustomerViewModel() { Customer = customer, Address = customer.Address, Pickup = customer.Pickup });
-            }
-            else
-            {
-                return RedirectToAction("Index", "Home");
-            }
+            //}
+            //else
+            //{
+            //    return RedirectToAction("Index", "Home");
+            //}
         }
 
         public IActionResult Create()

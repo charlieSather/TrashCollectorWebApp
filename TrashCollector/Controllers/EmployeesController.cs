@@ -10,13 +10,14 @@ using TrashCollector.Contracts;
 using TrashCollector.Models;
 using System.Net.Http;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Authorization;
+using System.Text;
 
 namespace TrashCollector.Controllers
 {
+    [Authorize(Roles = "Employee")]
     public class EmployeesController : Controller
     {
-        private readonly string Api_Key = "AIzaSyAyRUdbGYsbALxmqXoNgPyOLzcqJX1PQos";
-
         private readonly IRepositoryWrapper _repo;
         private readonly IConfiguration _config;
         public EmployeesController(IRepositoryWrapper repo, IConfiguration config)
@@ -58,6 +59,10 @@ namespace TrashCollector.Controllers
                 var dayAsDate = DateTime.Today.AddDays(DayOfWeekOffset(cvm.Day));
 
                 var customers = _repo.Customer.GetCustomersByZipCodeAndDate(employee.ZipCode, dayAsDate).ToList();
+                //if(customers.Count > 0)
+                //{
+                //    return RedirectToAction("MultipleCustomersMap", customers);
+                //}
 
                 return View("Index", new EmployeeViewModel { Customers = customers, Employee = employee, HidePickupTrash = true });
             }
@@ -109,13 +114,21 @@ namespace TrashCollector.Controllers
             }
             return RedirectToAction("Index", "Home");
         }
+
+        public IActionResult TrashCollected()
+        {
+            var employee = _repo.Employee.GetEmployee(this.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            if(employee is null) return RedirectToAction("Create");
+
+            var model = _repo.Transaction.GetEmployeeTransactionsToday(employee.Id);
+            return View("Transactions",model);
+        }
         public async Task<IActionResult> GoogleMap(int id)
         {
             var customer = _repo.Customer.GetCustomer(id);
             if (customer is null) return RedirectToAction("Index");
 
             HttpClient client = new HttpClient();
-
             var key = _config.GetValue<string>("Keys:MapQuestKey");
             var url = $"http://www.mapquestapi.com/geocoding/v1/address?key={key}&location={customer.Address.ToString()}";
 
@@ -127,9 +140,42 @@ namespace TrashCollector.Controllers
                 GeoLocation geoLocation = JsonConvert.DeserializeObject<GeoLocation>(jsonResult);
                 if(geoLocation.results.Length > 0)
                 {
-                    return View(new MapViewModel { Latitude = geoLocation.results[0].locations[0].latLng.lat.ToString(), Longitude = geoLocation.results[0].locations[0].latLng.lng.ToString() });
+                    return View(new List<MapViewModel> { new MapViewModel { Latitude = geoLocation.results[0].locations[0].latLng.lat.ToString(), Longitude = geoLocation.results[0].locations[0].latLng.lng.ToString() }});
                 }           
             }
+            return RedirectToAction("Index");
+        }
+
+        public async Task<IActionResult> MultipleCustomersMap(IEnumerable<Customer> customers)
+        {
+            HttpClient client = new HttpClient();
+            StringBuilder sb = new StringBuilder();
+            var key = _config.GetValue<string>("Keys:MapQuestKey");
+            List<MapViewModel> geocodes = new List<MapViewModel>();
+
+            foreach (Customer customer in customers)
+            {
+                sb.Append($"&location={customer.Address.ToString()}");
+            }
+
+            var url = $"http://www.mapquestapi.com/geocoding/v1/batch?key={key}{sb.ToString()}";
+
+            HttpResponseMessage response = await client.GetAsync(url);
+            string jsonResult = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
+            {
+                GeoLocation geoLocation = JsonConvert.DeserializeObject<GeoLocation>(jsonResult);
+                if (geoLocation.results.Length > 0)
+                {
+                    for(int i = 0; i < geoLocation.results.Length; i++)
+                    {
+                        geocodes.Add(new MapViewModel { Latitude = geoLocation.results[i].locations[0].latLng.lat.ToString(), Longitude = geoLocation.results[i].locations[0].latLng.lng.ToString() });
+                    }
+                    return View("GoogleMap",geocodes);
+                }
+            }
+
             return RedirectToAction("Index");
         }
 
@@ -152,10 +198,5 @@ namespace TrashCollector.Controllers
 
             return code - (int) today;
         }
-
-        //public bool IsSup()
-        //{
-        //    var pickups = _repo.Pickup.GetPickups();
-        //}
     }
 }

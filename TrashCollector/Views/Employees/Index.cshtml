@@ -9,18 +9,28 @@
 <h1 class="text-center">Customers</h1>
 <h1 class="text-center">@DateTime.Today.DayOfWeek.ToString()</h1>
 
-<form class="form-group" asp-action="FilterByDay" method="get" id="myForm">
-    <div class="form-group">
-        <label class="control-label">Select Day</label>
-        <select asp-for="Day" class="control-label" asp-items="@Model.Days" onchange="filterByDay();">
-            <option value="" selected disabled>Select Day</option>
-        </select>
-    </div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm">
+            <form class="form-group" asp-action="FilterByDay" method="get" id="myForm">
+                <div class="form-group">
+                    <label class="control-label">Select Day</label>
+                    <select asp-for="Day" class="control-label" asp-items="@Model.Days" onchange="filterByDay();">
+                        <option value="" selected disabled>Select Day</option>
+                    </select>
+                </div>
 
-    @*<div class="form-group">
-            <input type="submit" value="Filter by Day" class="btn btn-outline-dark" />
-        </div>*@
-</form>
+                @*<div class="form-group">
+                <input type="submit" value="Filter by Day" class="btn btn-outline-dark" />
+            </div>*@
+            </form>
+        </div>
+        <div class="col-sm text-right">
+            <a asp-action="TrashCollected">View Confirmed pickups</a>
+        </div>
+    </div>
+</div>
+
 
 @*<a asp-action="FilterByDay" asp-route-day="@Html."></a>*@
 
@@ -53,7 +63,7 @@
                         @Html.DisplayFor(modelItem => item.LastName)
                     </td>
                     <td>
-                        <a asp-action="GoogleMap" asp-route-id="@item.Id">@Html.DisplayFor(modelItem => item.Address.StreetAddress)</a>
+                        <a asp-action="GoogleMap" asp-route-id="@item.Id">@item.Address.StandardAddressFormat()</a>
                     </td>
                     @if (!Model.HidePickupTrash)
                     {

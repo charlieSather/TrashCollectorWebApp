@@ -1,0 +1,54 @@
+﻿@model IEnumerable<TrashCollector.Models.Transaction>
+@{
+    ViewData["Title"] = "Transactions";
+    Layout = "~/Views/Shared/_EmployeeLayout.cshtml";
+}
+
+<h1 class="text-center">Today's pickups</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Customer)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Customer.Address)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ChargeAmount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ChargeDate)
+            </th>
+
+
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Count() > 0)
+        {
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @($"{item.Customer.FirstName} {item.Customer.LastName}")
+                    </td>
+                    <td>
+                        <a asp-action="GoogleMap" asp-route-id="@item.Customer.Id">@item.Customer.Address.StandardAddressFormat()</a>
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ChargeAmount)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ChargeDate)
+                    </td>
+
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+<a asp-action="Index">Back to Home</a>
+
