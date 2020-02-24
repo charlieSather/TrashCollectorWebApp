@@ -12,6 +12,8 @@ namespace TrashCollector.Contracts
         Customer GetCustomer(string userId);
         void CreateCustomer(Customer customer);
         IQueryable<Customer> GetCustomersByZipCode(int zipCode);
+        IQueryable<Customer> GetCustomersByZipCodeAndDate(int zipCode, DateTime date);
+
         IQueryable<Customer> GetCustomersByZipCodeAndPickupDay(int zipCode, string day);
         IQueryable<Customer> FilterCustomersByPickupDay(string day);
     }

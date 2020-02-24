@@ -21,12 +21,10 @@ namespace TrashCollector.Models
         [Display(Name = "Last Name")]
         public string LastName { get; set; }
 
-        [Required]
         [ForeignKey("Address")]
         public int AddressId { get; set; }
         public Address Address { get; set; }
 
-        [Required]
         [ForeignKey("Pickup")]
         public int PickupId { get; set; }
         public Pickup Pickup { get; set; }

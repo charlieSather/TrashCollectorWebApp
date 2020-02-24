@@ -29,15 +29,7 @@ namespace TrashCollector.Controllers
                     return RedirectToAction("Create");
                 }
 
-                //var customers =
-                //    from customer in _repo.Customer.GetCustomersByZipCodeAndPickupDay(employee.ZipCode, DateTime.Today.DayOfWeek.ToString())
-                //    join transaction in _repo.Transaction.GetTransactionsToday(DateTime.Now) on customer.Id equals transaction.Id into joinGroup
-                //    from transaction in joinGroup.DefaultIfEmpty()
-                //    where transaction == null
-                //    select customer;
-
-                var customers = _repo.Customer.GetCustomersByZipCodeAndPickupDay(employee.ZipCode, DateTime.Today.DayOfWeek.ToString()).Except(_repo.Transaction.GetTransactionsToday(DateTime.Now).Select(t => t.Customer)).ToList();
-
+                var customers = _repo.Customer.GetCustomersByZipCodeAndDate(employee.ZipCode, DateTime.Today).Except(_repo.Transaction.GetTransactionsToday(DateTime.Now).Select(t => t.Customer)).ToList();
 
                 return View(new EmployeeViewModel { Customers = customers, Employee = employee });
             }
@@ -56,7 +48,9 @@ namespace TrashCollector.Controllers
 
                 if (employee is null) return RedirectToAction("Create");
 
-                var customers = _repo.Customer.GetCustomersByZipCodeAndPickupDay(employee.ZipCode, cvm.Day).ToList();
+                var dayAsDate = DateTime.Today.AddDays(DayOfWeekOffset(cvm.Day));
+
+                var customers = _repo.Customer.GetCustomersByZipCodeAndDate(employee.ZipCode, dayAsDate).ToList();
 
                 return View("Index", new EmployeeViewModel { Customers = customers, Employee = employee, HidePickupTrash = true });
             }
@@ -111,6 +105,23 @@ namespace TrashCollector.Controllers
 
         public bool UserIsVerifiedEmployee() => User.IsInRole("Employee") && User.Identity.IsAuthenticated;
         public bool SelectedDayIsToday(string day) => day == DateTime.Today.DayOfWeek.ToString();
+        public double DayOfWeekOffset(string dayOfWeek) 
+        {
+            var today = DateTime.Today.DayOfWeek;
+            double code = dayOfWeek switch
+            {
+                ("Sunday") => 0,
+                ("Monday") => 1,
+                ("Tuesday") => 2,
+                ("Wednesday") => 3,
+                ("Thursday") => 4,
+                ("Friday") => 5,
+                ("Saturday") => 6,
+                _ => throw new InvalidOperationException()
+            };
+
+            return code - (int) today;
+        }
         //public bool IsSup()
         //{
         //    var pickups = _repo.Pickup.GetPickups();
