@@ -5,10 +5,9 @@
     Layout = "~/Views/Shared/_CustomerLayout.cshtml";
 }
 
-<h1>Index</h1>
+<h1 class="text-center">Welcome @Model.Customer.FirstName @Model.Customer.LastName</h1>
 
 <div>
-    <h4>Customer</h4>
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
@@ -57,10 +56,17 @@
             @Html.DisplayNameFor(model => model.Pickup.IsSuspended)
         </dt>
         <dd class="col-sm-10">
-            @(Model.Pickup.IsSuspended ? "Suspended":"Active")
+            @(Model.Pickup.IsSuspended ? "Suspended" : "Active")
         </dd>
-
+        <dd class="col-sm-10">
+            <a asp-action="Transactions" asp-route-id="@Model.Customer.Id">View Transactions</a>
+        </dd>
+        <dd class="col-sm-10">
+        <a asp-action="UpdateSuspensionDates" asp-route-id="@Model.Customer.Id">Update Pickup Service Dates</a>
+        </dd>
     </dl>
+    @*<button class="btn btn-outline-dark" onclick="location.href = '@Url.Action("UpdateSuspensionDates")';return false;">Update Pickup Dates</button>*@
+    <br />
 
     <form asp-action="UpdatePickupDay">
         <div class="form-group">
@@ -85,9 +91,4 @@
             <input type="submit" value="Change one time pickup" class="btn btn-outline-dark" />
         </div>
     </form>
-    <button class="btn btn-outline-dark" onclick="location.href = '@Url.Action("UpdateSuspensionDates")';return false;" >Update Pickup Dates</button>
-</div>
-<div>
-    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
-    <a asp-action="Transactions" asp-route-id="@Model.Customer.Id">View Transactions</a>
 </div>

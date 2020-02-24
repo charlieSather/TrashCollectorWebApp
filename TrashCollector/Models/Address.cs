@@ -25,5 +25,8 @@ namespace TrashCollector.Models
         [Display(Name = "Zip Code")]
         [Required]
         public int ZipCode { get; set; }
+
+        public override string ToString() => $"{StreetAddress},{City},{State},{ZipCode}";
+
     }
 }

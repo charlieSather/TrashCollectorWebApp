@@ -53,7 +53,7 @@
                         @Html.DisplayFor(modelItem => item.LastName)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Address.StreetAddress)
+                        <a asp-action="GoogleMap" asp-route-id="@item.Id">@Html.DisplayFor(modelItem => item.Address.StreetAddress)</a>
                     </td>
                     @if (!Model.HidePickupTrash)
                     {
