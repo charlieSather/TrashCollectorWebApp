@@ -62,11 +62,24 @@
             <a asp-action="Transactions" asp-route-id="@Model.Customer.Id">View Transactions</a>
         </dd>
         <dd class="col-sm-10">
-        <a asp-action="UpdateSuspensionDates" asp-route-id="@Model.Customer.Id">Update Pickup Service Dates</a>
+            <a asp-action="UpdateSuspensionDates" asp-route-id="@Model.Customer.Id">Update Pickup Service Dates</a>
         </dd>
     </dl>
-    @*<button class="btn btn-outline-dark" onclick="location.href = '@Url.Action("UpdateSuspensionDates")';return false;">Update Pickup Dates</button>*@
+    @if (Model.Pickup.Balance != 0)
+    {
+        <form asp-action="Charge" method="POST">
+            <script src="//checkout.stripe.com/v2/checkout.js"
+                    class="stripe-button"
+                    data-key="@ViewBag.StripeKey"
+                    data-locale="auto"
+                    data-description="Pay Balance"
+                    data-amount="@Model.Pickup.Balance">
+            </script>
+        </form>
+    }
+
     <br />
+
 
     <form asp-action="UpdatePickupDay">
         <div class="form-group">

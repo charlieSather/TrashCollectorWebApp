@@ -35,6 +35,7 @@ namespace TrashCollector.Controllers
             {
                 return Redirect("./Identity/Account/Login");
             }
+            return View();
         }
 
         public IActionResult Privacy()

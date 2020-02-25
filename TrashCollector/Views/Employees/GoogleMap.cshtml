@@ -1,23 +1,21 @@
 ﻿@model IEnumerable<TrashCollector.Models.MapViewModel>
-@{
+@*@{
 
     ViewData["Title"] = "GoogleMap";
     Layout = "~/Views/Shared/_EmployeeLayout.cshtml";
-}
+}*@
 
 
 <h3 class="text-center">Address</h3>
-<!--The div element for the map -->
 <div id="map" style="height:800px;width:100%"></div>
+<a asp-action="Index">Back to Home</a>
 
 <script>
     function initMap() {
-            // The location of Uluru
             var uluru = { lat: 43.0389, lng:-87.9065 };
             // The map, centered at Uluru <--Milwaukee-->
             var map = new google.maps.Map(
                 document.getElementById('map'), { zoom: 10, center: uluru });
-            // The marker, positioned at Uluru
 
         @if(Model.Count() > 0)
         { 

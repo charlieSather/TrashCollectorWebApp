@@ -26,48 +26,38 @@ namespace TrashCollector.Controllers
             _config = config;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            if (UserIsVerifiedEmployee())
+
+            var employee = _repo.Employee.GetEmployee(this.User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+            if (employee is null)
             {
-                var employee = _repo.Employee.GetEmployee(this.User.FindFirstValue(ClaimTypes.NameIdentifier));
-
-                if (employee is null)
-                {
-                    return RedirectToAction("Create");
-                }
-
-                var customers = _repo.Customer.GetCustomersByZipCodeAndDate(employee.ZipCode, DateTime.Today).Except(_repo.Transaction.GetTransactionsToday(DateTime.Now).Select(t => t.Customer)).ToList();
-
-                return View(new EmployeeViewModel { Customers = customers, Employee = employee });
+                return RedirectToAction("Create");
             }
-            else
-            {
-                return RedirectToAction("Index", "Home");
-            }
+
+            var customers = _repo.Customer.GetCustomersByZipCodeAndDate(employee.ZipCode, DateTime.Today).Except(_repo.Transaction.GetTransactionsToday(DateTime.Now).Select(t => t.Customer)).ToList();
+            var geocodes = await GetCustomersGeocodes(customers);
+
+            return View(new EmployeeViewModel { Customers = customers, Employee = employee, Geocodes = geocodes });
+
         }
-        public IActionResult FilterByDay(EmployeeViewModel cvm)
+        public async Task<IActionResult> FilterByDay(EmployeeViewModel cvm)
         {
-            if (UserIsVerifiedEmployee())
-            {
-                 if(SelectedDayIsToday(cvm.Day)) return RedirectToAction("Index");
 
-                var employee = _repo.Employee.GetEmployee(this.User.FindFirstValue(ClaimTypes.NameIdentifier));
+            if (SelectedDayIsToday(cvm.Day)) return RedirectToAction("Index");
 
-                if (employee is null) return RedirectToAction("Create");
+            var employee = _repo.Employee.GetEmployee(this.User.FindFirstValue(ClaimTypes.NameIdentifier));
 
-                var dayAsDate = DateTime.Today.AddDays(DayOfWeekOffset(cvm.Day));
+            if (employee is null) return RedirectToAction("Create");
 
-                var customers = _repo.Customer.GetCustomersByZipCodeAndDate(employee.ZipCode, dayAsDate).ToList();
-                //if(customers.Count > 0)
-                //{
-                //    return RedirectToAction("MultipleCustomersMap", customers);
-                //}
+            var dayAsDate = DateTime.Today.AddDays(DayOfWeekOffset(cvm.Day));
 
-                return View("Index", new EmployeeViewModel { Customers = customers, Employee = employee, HidePickupTrash = true });
-            }
-         
-            return RedirectToAction("Index", "Home");
+            var customers = _repo.Customer.GetCustomersByZipCodeAndDate(employee.ZipCode, dayAsDate).ToList();
+            var geocodes = await GetCustomersGeocodes(customers);
+
+            return View("Index", new EmployeeViewModel { Customers = customers, Employee = employee, HidePickupTrash = true, Geocodes = geocodes });
+
         }
 
         public IActionResult Create() => View();
@@ -76,53 +66,46 @@ namespace TrashCollector.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(Employee employee)
         {
-            if (UserIsVerifiedEmployee())
+            if (ModelState.IsValid)
             {
-                if (ModelState.IsValid)
-                {
-                    employee.UserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-                    _repo.Employee.CreateEmployee(employee);
-                    _repo.Save();
-                    return RedirectToAction("Index");
-                }
-                else
-                {
-                    return View(employee);
-                }
+                employee.UserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                _repo.Employee.CreateEmployee(employee);
+                _repo.Save();
+                return RedirectToAction("Index");
             }
             else
             {
-                return RedirectToAction("Index", "Home");
+                return View(employee);
             }
         }
 
         public IActionResult PickUpTrash(int id)
         {
-            if (UserIsVerifiedEmployee())
-            {
-                var customerFromDb = _repo.Customer.GetCustomer(id);
 
-                if (customerFromDb != null)
-                {
-                    var employee = _repo.Employee.GetEmployee(this.User.FindFirstValue(ClaimTypes.NameIdentifier));
-                    customerFromDb.Pickup.Balance += 5;
-                    _repo.Transaction.CreateTransaction(new Transaction { ChargeDate = DateTime.Today, ChargeAmount = 5, CustomerId = customerFromDb.Id, EmployeeId = employee.Id });
-                    _repo.Pickup.UpdatePickup(customerFromDb.Pickup);
-                    _repo.Save();
-                    return RedirectToAction("Index");
-                }
+            var customerFromDb = _repo.Customer.GetCustomer(id);
+
+            if (customerFromDb != null)
+            {
+                var employee = _repo.Employee.GetEmployee(this.User.FindFirstValue(ClaimTypes.NameIdentifier));
+                customerFromDb.Pickup.Balance += 5;
+                _repo.Transaction.CreateTransaction(new Transaction { ChargeDate = DateTime.Today, ChargeAmount = 5, CustomerId = customerFromDb.Id, EmployeeId = employee.Id });
+                _repo.Pickup.UpdatePickup(customerFromDb.Pickup);
+                _repo.Save();
+                return RedirectToAction("Index");
             }
+
             return RedirectToAction("Index", "Home");
         }
 
         public IActionResult TrashCollected()
         {
             var employee = _repo.Employee.GetEmployee(this.User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            if(employee is null) return RedirectToAction("Create");
+            if (employee is null) return RedirectToAction("Create");
 
             var model = _repo.Transaction.GetEmployeeTransactionsToday(employee.Id);
-            return View("Transactions",model);
+            return View("Transactions", model);
         }
+
         public async Task<IActionResult> GoogleMap(int id)
         {
             var customer = _repo.Customer.GetCustomer(id);
@@ -138,20 +121,22 @@ namespace TrashCollector.Controllers
             if (response.IsSuccessStatusCode)
             {
                 GeoLocation geoLocation = JsonConvert.DeserializeObject<GeoLocation>(jsonResult);
-                if(geoLocation.results.Length > 0)
+                if (geoLocation.results.Length > 0)
                 {
-                    return View(new List<MapViewModel> { new MapViewModel { Latitude = geoLocation.results[0].locations[0].latLng.lat.ToString(), Longitude = geoLocation.results[0].locations[0].latLng.lng.ToString() }});
-                }           
+                    return View(new List<MapViewModel> { new MapViewModel { Latitude = geoLocation.results[0].locations[0].latLng.lat.ToString(), Longitude = geoLocation.results[0].locations[0].latLng.lng.ToString() } });
+                }
             }
             return RedirectToAction("Index");
         }
 
-        public async Task<IActionResult> MultipleCustomersMap(IEnumerable<Customer> customers)
+        public async Task<IEnumerable<MapViewModel>> GetCustomersGeocodes(IEnumerable<Customer> customers)
         {
             HttpClient client = new HttpClient();
             StringBuilder sb = new StringBuilder();
             var key = _config.GetValue<string>("Keys:MapQuestKey");
             List<MapViewModel> geocodes = new List<MapViewModel>();
+            if (customers.Count() < 1) return geocodes;
+
 
             foreach (Customer customer in customers)
             {
@@ -168,22 +153,22 @@ namespace TrashCollector.Controllers
                 GeoLocation geoLocation = JsonConvert.DeserializeObject<GeoLocation>(jsonResult);
                 if (geoLocation.results.Length > 0)
                 {
-                    for(int i = 0; i < geoLocation.results.Length; i++)
+                    for (int i = 0; i < geoLocation.results.Length; i++)
                     {
                         geocodes.Add(new MapViewModel { Latitude = geoLocation.results[i].locations[0].latLng.lat.ToString(), Longitude = geoLocation.results[i].locations[0].latLng.lng.ToString() });
                     }
-                    return View("GoogleMap",geocodes);
                 }
             }
 
-            return RedirectToAction("Index");
+            return geocodes;
         }
 
         public bool UserIsVerifiedEmployee() => User.IsInRole("Employee") && User.Identity.IsAuthenticated;
         public bool SelectedDayIsToday(string day) => day == DateTime.Today.DayOfWeek.ToString();
-        public double DayOfWeekOffset(string dayOfWeek) 
+        public double DayOfWeekOffset(string dayOfWeek)
         {
             var today = DateTime.Today.DayOfWeek;
+
             double code = dayOfWeek switch
             {
                 ("Sunday") => 0,
@@ -196,7 +181,7 @@ namespace TrashCollector.Controllers
                 _ => throw new InvalidOperationException()
             };
 
-            return code - (int) today;
+            return code - (int)today;
         }
     }
 }

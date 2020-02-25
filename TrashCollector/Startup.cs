@@ -16,6 +16,7 @@ using TrashCollector.Contracts;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using TrashCollector.ActionFilter;
+using Stripe;
 
 namespace TrashCollector
 {
@@ -47,6 +48,8 @@ namespace TrashCollector
             });
 
             services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
+            services.AddScoped<SuspensionDates>();
+
 
             services.AddControllersWithViews();
             services.AddRazorPages();
@@ -81,6 +84,9 @@ namespace TrashCollector
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
+
+            StripeConfiguration.ApiKey = Configuration["Keys:StripeSecretKey"];
+
         }
     }
 }

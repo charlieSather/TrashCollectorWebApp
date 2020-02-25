@@ -10,6 +10,7 @@ namespace TrashCollector.Models
     {
         public IEnumerable<Customer> Customers { get; set; }
         public Employee Employee { get; set; }
+        public IEnumerable<MapViewModel> Geocodes;
         public string Day { get; set; }
         public bool HidePickupTrash { get; set; }
         public SelectList Days

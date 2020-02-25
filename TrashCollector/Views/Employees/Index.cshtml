@@ -20,9 +20,6 @@
                     </select>
                 </div>
 
-                @*<div class="form-group">
-                <input type="submit" value="Filter by Day" class="btn btn-outline-dark" />
-            </div>*@
             </form>
         </div>
         <div class="col-sm text-right">
@@ -30,9 +27,6 @@
         </div>
     </div>
 </div>
-
-
-@*<a asp-action="FilterByDay" asp-route-day="@Html."></a>*@
 
 
 <table class="table">
@@ -77,6 +71,12 @@
 
     </tbody>
 </table>
+@if (Model.Geocodes.Count() > 0) 
+{ 
+    <div>
+    @await Html.PartialAsync("GoogleMap", Model.Geocodes);
+    </div>
+}
 
 
 <script>
